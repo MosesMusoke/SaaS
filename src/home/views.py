@@ -4,7 +4,11 @@ from django.shortcuts import render
 from visits.models import PageVisits
 
 # *args, **kwargs -> These are the extra arguments and keyword arguments that may be passed other than the request. And these are used when the developer is not sure of the arguments taht will be passed.
-def home_page_view(request, *args, **kwargs):
+def home_view(request, *args, **kwargs):
+
+    return about_view(request, *args, **kwargs)
+
+def about_view(request, *args, **kwargs):
 
     qs = PageVisits.objects.all() # This retrieves everything
     page_qs = PageVisits.objects.filter(path=request.path) # This retrieves everything with the path equals to the current path.
