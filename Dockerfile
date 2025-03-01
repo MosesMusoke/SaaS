@@ -43,10 +43,21 @@ COPY ./src /code
 # Install the Python project requirements
 RUN pip install -r /tmp/requirements.txt
 
+ARG DJANGO_SECRET_KEY
+ENV DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+
+ARG DJANGO_DEBUG=0
+ENV DJANGO_DEBUG=${DJANGO_DEBUG}
+
 # database isn't available during build
 # run any other commands that do not need the database
 # such as:
-# RUN python manage.py collectstatic --noinput
+# Automatically downloading static files
+RUN python manage.py vendor_pull
+# Collecting the static files
+RUN python manage.py collectstatic --noinput
+# Serving the static files using whitenoise function (If the project gets bigger then you can use better serving tools like object storage or s3 technology)
+
 
 # set the Django default project name
 ARG PROJ_NAME="cfehome"

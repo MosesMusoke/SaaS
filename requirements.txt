@@ -1,2 +1,10 @@
 Django>=4.2
-gunicorn
+gunicorn # We use this in the production environments inplace of manage.py
+python-decouple # We use this to load in our environment variables
+psycopg[binary] # Postgresql adapter for python
+dj-database-url # This helps you to utilize the DATABASE_URL ENVIRONMENT variable to configure your django application
+requests
+
+
+
+
