@@ -16,6 +16,18 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Email config
+EMAIL_BACKEND="django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST=config("EMAIL_HOST", cast=str, default='smtp.gmail.com')
+EMAIL_PORT=config("EMAIL_PORT", cast=str, default='587')
+EMAIL_HOST_USER=config("EMAIL_HOST_USER", cast=str, default=None)
+EMAIL_HOST_PASSWORD=config("EMAIL_HOST_PASSWORD", cast=str, default=None)
+EMAIL_USE_TLS=config("EMAIL_USE_TLS", cast=str, default=True)
+# EMAIL_USE_SSL=config("EMAIL_USE_SSL", cast=str, default=False)
+
+# These managers and admins are really useful e.g incases of 500 errors
+ADMINS=[("Moses", "mosesserunjogi1@gmail.com")]
+MANAGERS=ADMINS
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -47,20 +59,30 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    # Third-party-apps
+    'allauth',
+    'allauth.account',
+    
+    # Optional -- requires install using `django-allauth[socialaccount]`.
+    'allauth.socialaccount',
     'django.contrib.staticfiles',
     
     # my-apps
     "commando",
     "visits",
+    
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    # Add the account middleware:
+    "allauth.account.middleware.AccountMiddleware",
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
@@ -77,6 +99,10 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                
+                # `allauth` needs this from django
+                'django.template.context_processors.request',
+                
             ],
         },
     },
@@ -129,6 +155,18 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Django allauth config
+AUTHENTICATION_BACKENDS = [
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by email
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+# Provider specific settings
+SOCIALACCOUNT_PROVIDERS = {}
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
@@ -158,6 +196,8 @@ STATICFILES_DIRS = [
 # sources(s) for python manage.py collectstatic
 # local cdn
 STATIC_ROOT = BASE_DIR / "local-cdn"
+
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # if DEBUG:
 #     STATIC_ROOT = BASE_DIR / "PROD-cdn"
